@@ -1,0 +1,21 @@
+# ninja log v5
+10	55	6920603383276935	CMakeFiles/Ass2.dir/MyMap.cpp.obj	fdda4073dc522c8a
+12	325	6920603385981924	CMakeFiles/Ass2.dir/Triple.cpp.obj	56cba6cda6f4e163
+3	341	6920603386137384	CMakeFiles/Ass2.dir/Func.cpp.obj	872861a89253d1d
+7	352	6920603386252606	CMakeFiles/Ass2.dir/FuncTriple.cpp.obj	5f14596b241a8d0e
+0	523	6920603387965483	CMakeFiles/Ass2.dir/Main.cpp.obj	31761dec70647a97
+5	983	6920603392548133	CMakeFiles/Ass2.dir/ROBDD.cpp.obj	60f816e04eb441b6
+0	7	0	clean	e4e5e35ff363ff4f
+10	53	6920605590970511	CMakeFiles/Ass2.dir/MyMap.cpp.obj	fdda4073dc522c8a
+5	300	6920605593443827	CMakeFiles/Ass2.dir/Func.cpp.obj	872861a89253d1d
+15	301	6920605593453831	CMakeFiles/Ass2.dir/Triple.cpp.obj	56cba6cda6f4e163
+12	326	6920605593709409	CMakeFiles/Ass2.dir/FuncTriple.cpp.obj	5f14596b241a8d0e
+2	484	6920605595277080	CMakeFiles/Ass2.dir/Main.cpp.obj	31761dec70647a97
+7	917	6920605599593991	CMakeFiles/Ass2.dir/ROBDD.cpp.obj	60f816e04eb441b6
+0	6	0	clean	e4e5e35ff363ff4f
+16	307	6920626409969354	CMakeFiles/Ass2.dir/MyMap.cpp.obj	fdda4073dc522c8a
+13	332	6920626410221217	CMakeFiles/Ass2.dir/Triple.cpp.obj	56cba6cda6f4e163
+8	345	6920626410356421	CMakeFiles/Ass2.dir/Func.cpp.obj	872861a89253d1d
+10	346	6920626410356421	CMakeFiles/Ass2.dir/FuncTriple.cpp.obj	5f14596b241a8d0e
+2	590	6920626412793860	CMakeFiles/Ass2.dir/Main.cpp.obj	31761dec70647a97
+5	1045	6920626417335322	CMakeFiles/Ass2.dir/ROBDD.cpp.obj	60f816e04eb441b6

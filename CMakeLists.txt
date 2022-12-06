@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.24)
+project(Ass2)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(Ass2 main.cpp ROBDD.cpp ROBDD.h Func.cpp Func.h Triple.cpp Triple.h ISCAS.h FuncTriple.cpp FuncTriple.h MyMap.cpp MyMap.h)
