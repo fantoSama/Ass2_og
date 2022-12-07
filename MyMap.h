@@ -226,7 +226,7 @@ public:
             return *this;
         }
 
-        const const reverse_iterator operator++(int) {
+        const reverse_iterator operator++(int) {
             reverse_iterator tmp(*this);
             Node *node = m_Nodes2Visit.back();
             m_Nodes2Visit.pop_back();
