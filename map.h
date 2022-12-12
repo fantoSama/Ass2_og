@@ -7,89 +7,42 @@
 #include <list>
 
 template<class K, class D>
-class MyMap {
+class map_rb {
 public:
     typedef std::pair<const K, D> value_type;
 
 
 private:
     // Node class
-    class Node {
-    public:
+    struct Node {
         Node(const K &key, const D &value) : m_value(key, value) {}
 
-    private:
+        ~Node() {
+            delete m_pLeft;
+            delete m_pRight;
+        }
         value_type m_value;
         Node *m_pLeft = nullptr;
         Node *m_pRight = nullptr;
     };
 
 public:
-    // normal constante iterator
-    class const_iterator : public std::iterator<std::forward_iterator_tag, value_type> {
-    public:
-        // copy constructor
-        const_iterator(const const_iterator &crArg) {
-            if (&crArg != this)
-                for (auto node: m_Nodes2Visit)
-                    crArg.m_Nodes2Visit.push_back(node);
-        }
 
-        // constructor
-        explicit const_iterator(Node *start) {
-            goDown(start);
-        }
-
-        // Operators
-        const_iterator &operator++() {
-            Node *node = m_Nodes2Visit.back();
-            m_Nodes2Visit.pop_back();
-            goDown(node);
-            return *this;
-        }
-
-        const_iterator operator++(int) {
-            const_iterator tmp(*this);
-            Node *node = m_Nodes2Visit.back();
-            m_Nodes2Visit.pop_back();
-            goDown(node);
-            return tmp;
-        }
-
-
-        typename const_iterator::value_type &operator*() const {
-            return m_Nodes2Visit.back()->m_value;
-        }
-
-        typename const_iterator::value_type *operator->() const {
-            return &m_Nodes2Visit.back()->m_value;
-        }
-
-        friend bool operator==(const const_iterator &iter1, const const_iterator &iter2) {
-            return iter1.m_Nodes2Visit == iter2.m_Nodes2Visit;
-        }
-
-        friend bool operator!=(const const_iterator &iter1, const const_iterator &iter2) {
-            return iter1.m_Nodes2Visit != iter2.m_Nodes2Visit;
-        }
-
-    private:
-        void goDown(Node *goFrom) {
-            for (; goFrom; goFrom = goFrom->m_pLeft)
-                m_Nodes2Visit.push_back(goFrom);
-        }
-
-        std::list<Node *> m_Nodes2Visit;
-    };
-
-    // normal iterator
     class iterator : public std::iterator<std::forward_iterator_tag, value_type> {
     public:
-        // copy constructor
+        std::list<Node *> m_Nodes2Visit;
+
+//         copy constructor
         iterator(const iterator &crArg) {
             if (&crArg != this)
-                for (auto node: m_Nodes2Visit)
-                    crArg.m_Nodes2Visit.push_back(node);
+                for (auto node: crArg.m_Nodes2Visit)
+                    m_Nodes2Visit.push_back(node);
+        }
+
+        iterator& operator=(const iterator &crArg) {
+            if (&crArg != this)
+                for (auto node: crArg.m_Nodes2Visit)
+                    m_Nodes2Visit.push_back(node);
         }
 
         // constructor
@@ -98,14 +51,14 @@ public:
         }
 
         // Operators
-        explicit operator const_iterator() {
-            return const_iterator(m_Nodes2Visit.front());
-        }
+//        explicit operator const_iterator() {  // TODO: take out the comment from the convert operator
+//            return const_iterator(m_Nodes2Visit.front());
+//        }
 
         iterator &operator++() {
             Node *node = m_Nodes2Visit.back();
             m_Nodes2Visit.pop_back();
-            goDown(node);
+            goDown(node->m_pRight);
             return *this;
         }
 
@@ -113,7 +66,7 @@ public:
             iterator tmp(*this);
             Node *node = m_Nodes2Visit.back();
             m_Nodes2Visit.pop_back();
-            goDown(node);
+            goDown(node->m_pRight);
             return tmp;
         }
 
@@ -140,129 +93,86 @@ public:
                 m_Nodes2Visit.push_back(goFrom);
         }
 
-        std::list<Node *> m_Nodes2Visit;
     };
 
-    // reverse const iterator
-    class const_reverse_iterator : public std::iterator<std::forward_iterator_tag, value_type> {
-    public:
-        // copy constructor
-        const_reverse_iterator(const const_reverse_iterator &crArg) {
-            if (&crArg != this)
-                for (auto node: m_Nodes2Visit)
-                    crArg.m_Nodes2Visit.push_back(node);
+    map_rb()= default;
+
+    ~map_rb()
+    {
+        delete m_pRoot;
+    }
+
+    map_rb(const map_rb<K, D> &crArg)  // TODO: deleting copy constructor if not used
+    {
+        if (crArg.m_pRoot)
+            m_pRoot = new Node(*crArg.m_pRoot);
+    }
+
+    map_rb &operator=(const map_rb<K, D> &crArg)  // TODO: deleting assign operator if not used
+    {
+        if (&crArg != this)
+        {
+            delete m_pRoot;
+            m_pRoot = nullptr;
+            if (crArg.m_pRoot)
+                m_pRoot = new Node(*crArg.m_pRoot);
         }
+        return *this;
+    }
 
-        // constructor
-        explicit const_reverse_iterator(Node *start) {
-            goDown(start);
+
+    iterator find(const K& key) const
+    {
+        Node *pTmp = m_pRoot;
+        while (pTmp != nullptr)
+        {
+            if (key < pTmp->m_value.first)
+                pTmp = pTmp->m_pLeft;
+            else if (pTmp->m_value.first < key)
+                pTmp = pTmp->m_pRight;
+            else
+                // has been found
+                return iterator(pTmp);
         }
+        return end();
+    }
 
-        // Operators
-        const_reverse_iterator &operator++() {
-            Node *node = m_Nodes2Visit.back();
-            m_Nodes2Visit.pop_back();
-            goDown(node);
-            return *this;
+
+
+    std::pair<iterator, bool> insert(const value_type& value)
+    {
+        return insertRec(m_pRoot, value.first, value.second);
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const map_rb<K, D> &crArg)
+    {
+        if (crArg.m_pRoot)
+            os << *crArg.m_pRoot;
+        return os;
+    }
+
+private:
+    std::pair<iterator, bool> insertRec(Node *&pTmp, const K &pKey, const D &pData)
+    {
+        if (!pTmp) {
+            pTmp = new Node(pKey, pData);
+            return std::pair<iterator, bool>(iterator(pTmp), true);
         }
-
-        const_reverse_iterator operator++(int) {
-            const_reverse_iterator tmp(*this);
-            Node *node = m_Nodes2Visit.back();
-            m_Nodes2Visit.pop_back();
-            goDown(node);
-            return tmp;
+        else
+        {
+            if (pKey < pTmp->m_value.first)
+                return insertRec(pTmp->m_pLeft, pKey, pData);
+            else if (pTmp->m_value.first < pKey)
+                return insertRec(pTmp->m_pRight, pKey, pData);
         }
+    }
 
-        //value_type& operator*(){
-        typename const_reverse_iterator::value_type &operator*() {
-            return m_Nodes2Visit.back()->m_value;
-        }
-
-        typename const_reverse_iterator::value_type *operator->() {
-            return &m_Nodes2Visit.back()->m_value;
-        }
-
-        friend bool operator==(const const_reverse_iterator &iter1, const const_reverse_iterator &iter2) {
-            return iter1.m_Nodes2Visit == iter2.m_Nodes2Visit;
-        }
-
-        friend bool operator!=(const const_reverse_iterator &iter1, const const_reverse_iterator &iter2) {
-            return iter1.m_Nodes2Visit != iter2.m_Nodes2Visit;
-        }
-
-    private:
-        void goDown(Node *goFrom) {
-            for (; goFrom; goFrom = goFrom->m_pRight)
-                m_Nodes2Visit.push_back(goFrom);
-        }
-
-        std::list<Node *> m_Nodes2Visit;
-    };
-
-    // reverse iterator
-    class reverse_iterator : public std::iterator<std::forward_iterator_tag, value_type> {
-    public:
-        // copy constructor
-        reverse_iterator(const reverse_iterator &crArg) {
-            if (&crArg != this)
-                for (auto node: m_Nodes2Visit)
-                    crArg.m_Nodes2Visit.push_back(node);
-        }
-
-        // constructor
-        explicit reverse_iterator(Node *start) {
-            goDown(start);
-        }
-
-        // Operators
-        explicit operator const_reverse_iterator() {
-            return const_reverse_iterator(m_Nodes2Visit.front());
-        }
-
-        reverse_iterator &operator++() {
-            Node *node = m_Nodes2Visit.back();
-            m_Nodes2Visit.pop_back();
-            goDown(node);
-            return *this;
-        }
-
-        const const reverse_iterator operator++(int) {
-            reverse_iterator tmp(*this);
-            Node *node = m_Nodes2Visit.back();
-            m_Nodes2Visit.pop_back();
-            goDown(node);
-            return tmp;
-        }
-
-        //value_type& operator*(){
-        typename reverse_iterator::value_type &operator*() {
-            return m_Nodes2Visit.back()->m_value;
-        }
-
-        typename reverse_iterator::value_type *operator->() {
-            return &m_Nodes2Visit.back()->m_value;
-        }
-
-        friend bool operator==(const reverse_iterator &iter1, const reverse_iterator &iter2) {
-            return iter1.m_Nodes2Visit == iter2.m_Nodes2Visit;
-        }
-
-        friend bool operator!=(const reverse_iterator &iter1, const reverse_iterator &iter2) {
-            return iter1.m_Nodes2Visit != iter2.m_Nodes2Visit;
-        }
-
-    private:
-        void goDown(Node *goFrom) {
-            for (; goFrom; goFrom = goFrom->m_pRight)
-                m_Nodes2Visit.push_back(goFrom);
-        }
-
-        std::list<Node *> m_Nodes2Visit;
-    };
-
+    Node *m_pRoot = nullptr;
 public:
-    iterator end() { return iterator(); }
+    iterator begin() { return iterator(m_pRoot); }
+    iterator end() const { return iterator(nullptr); }
+//    const_iterator  cbegin() const { return const_iterator(m_pRoot); } // todo uncomment this part later
+//    const_iterator cend() const { return const_iterator(nullptr); } // todo uncomment this part later
 };
 
 
