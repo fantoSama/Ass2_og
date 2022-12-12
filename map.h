@@ -56,6 +56,7 @@ public:
             return tmp;
         }
 
+
         typename const_iterator::value_type &operator*() const {
             return m_Nodes2Visit.back()->m_value;
         }
